@@ -1,7 +1,7 @@
 import subprocess, sys
 from itertools import islice
 
-FILES = ['euler35.cpp']
+FILES = ['euler35.cpp', 'euler35_1.cpp']
 
 def test(f, test = (1000000, 55)):
     size, expected = test
