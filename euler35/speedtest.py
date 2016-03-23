@@ -34,7 +34,10 @@ def avg_time(f, size = 1000000, loops = 20):
 
 def compile(fname, level):
     out = 'build/'+fname.split('.')[0]+'_l%d'%level
-    p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', fname])
+    if level == 0:
+        p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', '-g' , fname])
+    else:
+        p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', fname])
     p.wait()
     return out
 
