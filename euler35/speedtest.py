@@ -1,11 +1,11 @@
 import subprocess, sys
 from itertools import islice
 
-FILES = ['euler35.cpp', 'euler35_1.cpp', 'euler35_2.cpp', 'euler35_3.cpp']
+FILES = ['euler35.cpp', 'euler35_1.cpp', 'euler35_2.cpp', 'euler35_3.cpp', 'euler35_4.py', 'euler35_5.py']
 
 def test(f, test = (1000000, 55)):
     size, expected = test
-    p = subprocess.Popen([f], stdin = subprocess.PIPE, 
+    p = subprocess.Popen(f, stdin = subprocess.PIPE, 
         stdout=subprocess.PIPE, stderr = subprocess.PIPE)
     p.stdin.write('%d\n'%size)
     p.wait()
@@ -16,7 +16,7 @@ def test(f, test = (1000000, 55)):
     return res[-1] == '%d\n'%expected
 
 def spd_test(f,size = 1000000):
-    p = subprocess.Popen(['time', f], stdin = subprocess.PIPE, 
+    p = subprocess.Popen(['time'] + f, stdin = subprocess.PIPE, 
         stdout=subprocess.PIPE, stderr = subprocess.PIPE)
     p.stdin.write('%d\n'%size)
     p.wait()
@@ -33,13 +33,16 @@ def avg_time(f, size = 1000000, loops = 20):
     return sum(acc)/len(acc)
 
 def compile(fname, level):
-    out = 'build/'+fname.split('.')[0]+'_l%d'%level
+    name,ext = fname.split('.')
+    if ext == 'py':
+        return ['python', fname]
+    out = 'build/'+name+'_l%d'%level
     if level == 0:
         p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', '-g' , fname])
     else:
         p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', fname])
     p.wait()
-    return out
+    return [out]
 
 def main(args):
     if len(args)>1 and args[1]=='-t':
@@ -60,14 +63,16 @@ def main(args):
     else:
         #Speed Test
         baseline = -1
+        if len(args)>1:
+            loops = int(args[1])
         for f in FILES:
             print("Testing %s"%f)
             print("Compiling...")
             out1 = compile(f,0)
             out2 = compile(f,3)
             print("Done!\nTesting...")
-            t1 = avg_time(out1)
-            t2 = avg_time(out2)
+            t1 = avg_time(out1, loops = loops)
+            t2 = avg_time(out2, loops = loops)
             if baseline == -1:
                 baseline = t2
             print("Done!\nTime was %f for -O0 and %f for -O3 -> %.2f%% improvement"
