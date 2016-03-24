@@ -72,6 +72,8 @@ def main(args):
         baseline = -1
         if len(args)>1:
             loops = int(args[1])
+        else:
+            loops = 20
         for f in FILES:
             print("Testing %s"%f)
             print("Compiling...")
