@@ -1,7 +1,14 @@
-import subprocess, sys
+import subprocess, sys, os.path
 from itertools import islice
 
 FILES = ['euler35.cpp', 'euler35_1.cpp', 'euler35_2.cpp', 'euler35_3.cpp', 'euler35_4.py', 'euler35_5.py']
+
+PYPY = '~/pypy/bin/pypy'
+
+if os.path.exists(os.path.expanduser(PYPY)):
+    python = os.path.expanduser(PYPY)
+else:
+    python = 'python'
 
 def test(f, test = (1000000, 55)):
     size, expected = test
@@ -35,7 +42,7 @@ def avg_time(f, size = 1000000, loops = 20):
 def compile(fname, level):
     name,ext = fname.split('.')
     if ext == 'py':
-        return ['python', fname]
+        return [python, fname]
     out = 'build/'+name+'_l%d'%level
     if level == 0:
         p = subprocess.Popen(['g++', '-o', out, '-O%d'%level, '-std=c++11', '-g' , fname])
